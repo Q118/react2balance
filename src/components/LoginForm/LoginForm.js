@@ -3,10 +3,12 @@ import axios from 'axios';
 import './LoginForm.css';
 import { API_BASE_URL } from '../../constants/apiContants';
 import { withRouter } from "react-router-dom";
+import users from "../../db/users.json";
+import app from 'express';
 
 function LoginForm(props) {
     const [state, setState] = useState({
-        email: "",
+        userName: "",
         password: "",
         successMessage: null
     })
@@ -20,30 +22,25 @@ function LoginForm(props) {
 
     const handleSubmitClick = (e) => {
         e.preventDefault();
-        const payload = {
-            "email": state.email,
-            "password": state.password,
-        }
-        axios.post(API_BASE_URL + 'login', payload)
-            .then(function (response) {
-                if (response.data.code === 200) {
-                    setState(prevState => ({
-                        ...prevState,
-                        'successMessage': 'Login successful. Redirecting to home page..'
-                    }))
-                    redirectToHome();
-                    props.showError(null)
-                }
-                else if (response.data.code === 204) {
-                    props.showError("Username and password do not match");
-                }
-                else {
-                    props.showError("Username does not exists");
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        app.post ( '/login', (req, res) => {
+            const user = users.find(user => user.userName === req.body.userName)
+            if (user == null) {
+              return res.status(400).send('Bad Request: Cannot find user')
+            }
+            else if (user.password !== req.body.password) {
+              return res.status(400).send('Bad Request: Invalid Password')
+            }
+            else if (user.userName === req.body.userName) {
+              setState(prevState => ({
+                ...prevState,
+                'successMessage': 'Login successful. Redirecting to home page..'
+              }))
+              redirectToHome();
+              props.showError(null)
+            } else {
+              res.status(500).send('Internal Server Error')
+            }
+          })
     }
     const redirectToHome = () => {
         props.updateTitle('Home')
@@ -57,16 +54,16 @@ function LoginForm(props) {
         <div className="card col-12 col-lg-4 login-card mt-2 hv-center">
             <form>
                 <div className="form-group text-left">
-                    <label htmlFor="exampleInputEmail1">Email address</label>
-                    <input type="email"
+                    <label htmlFor="exampleInputuserName1">User Name</label>
+                    <input type="userName"
                         className="form-control"
-                        id="email"
-                        aria-describedby="emailHelp"
-                        placeholder="Enter email"
-                        value={state.email}
+                        id="userName"
+                        aria-describedby="userNameHelp"
+                        placeholder="Enter userName"
+                        value={state.userName}
                         onChange={handleChange}
                     />
-                    <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+                    <small id="userNameHelp" className="form-text text-muted">We'll never share your userName with anyone else.</small>
                 </div>
                 <div className="form-group text-left">
                     <label htmlFor="exampleInputPassword1">Password</label>

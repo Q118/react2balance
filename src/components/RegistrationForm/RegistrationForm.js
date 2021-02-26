@@ -6,7 +6,7 @@ import { withRouter } from "react-router-dom";
 
 function RegistrationForm(props) {
     const [state , setState] = useState({
-        email : "",
+        userName : "",
         password : "",
         confirmPassword: "",
         successMessage: null
@@ -19,10 +19,10 @@ function RegistrationForm(props) {
         }))
     }
     const sendDetailsToServer = () => {
-        if(state.email.length && state.password.length) {
+        if(state.userName.length && state.password.length) {
             props.showError(null);
             const payload={
-                "email":state.email,
+                "userName":state.userName,
                 "password":state.password,
             }
             axios.post(API_BASE_URL+'register', payload)
@@ -66,16 +66,16 @@ function RegistrationForm(props) {
         <div className="card col-12 col-lg-4 login-card mt-2 hv-center">
             <form>
                 <div className="form-group text-left">
-                <label htmlFor="exampleInputEmail1">Email address</label>
-                <input type="email" 
+                <label htmlFor="exampleInputuserName1">userName address</label>
+                <input type="userName" 
                        className="form-control" 
-                       id="email" 
-                       aria-describedby="emailHelp" 
-                       placeholder="Enter email" 
-                       value={state.email}
+                       id="userName" 
+                       aria-describedby="userNameHelp" 
+                       placeholder="Enter userName" 
+                       value={state.userName}
                        onChange={handleChange}
                 />
-                <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+                <small id="userNameHelp" className="form-text text-muted">We'll never share your userName with anyone else.</small>
                 </div>
                 <div className="form-group text-left">
                     <label htmlFor="exampleInputPassword1">Password</label>
